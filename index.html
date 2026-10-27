@@ -33,8 +33,8 @@ function renderDetail(r){const m=model(r),cs=m.contracts,parents=new Set(cs.map(
 const buttons=effective.map((c,i)=>{const done=parents.has(c.id),unknown=m.error;return `<button class="contract-btn ${curr.id===c.id?'selected':''}" data-contract="${i}"><span class="ball ${done?'':'next'} ${unknown?'alert':''}">${done?'완':unknown?'!':'A'+(i+1)}</span><span class="contract-info"><span class="flex"><span class="contract-title">${cs.length?'A'+(i+1):'현재 저장 계약'} ${done?'· 갱신 완료':c.id===m.leaf?.id?'· 다음 갱신 예정':''}</span></span><span class="contract-meta">만기 ${esc(c.expiry||'확인 필요')} · ${esc(c.company||'보험사 미등록')}</span></span><span class="arrow">›</span></button>`}).join('');
 $('#detail').innerHTML=`<div class="section"><div class="flex"><div><div class="customer-name">${esc(r.name||'이름 없음')}</div><div class="vehicle">${esc([r.brand,r.car,r.plate].filter(Boolean).join(' · ')||'차량 정보 없음')}</div></div><span class="tag">조회 전용</span></div>${pair('연락처',r.phone,'customerPhone')}</div><div class="section"><h2>보험계약 이력</h2>${m.error?`<div class="warning">${esc(m.error)} · 잘못된 원장을 임의로 대체하거나 계약을 추정하지 않습니다.</div>`:''}${buttons}<div class="hint">원형 ‘완’은 확정된 후속 계약이 연결된 계약만 표시합니다. 독립 원장이 없는 기존 고객은 현재 계약만 표시합니다.</div></div><div class="section"><h2>${cs.length?'A'+(effective.indexOf(curr)+1):'현재 계약'} 상세 정보</h2>${pair('보험사',curr.company)}${hotline?pair('보험사 대표 콜센터',hotline,'insurerPhone'):''}${pair('보험기간',(curr.start||'—')+' ~ '+(curr.expiry||'—'))}${pair('가입일',curr.joinDate)}${pair('보험료',money(curr.premium))}${pair('운전자 범위',curr.driver)}${pair('최저 운전자 연령',curr.age)}${pair('마일리지 환급금',curr.refund===''||curr.refund==null?'기록 없음':money(curr.refund))}${pair('최종 결제금액',curr.final===''||curr.final==null?'기록 없음':money(curr.final))}${!cs.length?'<div class="hint">기존 고객의 과거 계약은 추정해서 추가하지 않았습니다.</div>':''}</div>`;
 document.querySelectorAll('[data-contract]').forEach(b=>b.onclick=()=>{selectedContract=effective[Number(b.dataset.contract)].id;renderDetail(r)});
-document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>copyDisplayedNumber(b.dataset.copy==='customerPhone'?r.phone:hotline));}
-async function copyDisplayedNumber(value){if(!value)return;try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(String(value));}else{const el=document.createElement('textarea');el.value=String(value);el.style.cssText='position:fixed;left:-9999px;top:-9999px';document.body.appendChild(el);el.select();if(!document.execCommand('copy'))throw Error('복사 불가');el.remove();}const toast=$('#copyToast');toast.textContent='연락처가 복사되었습니다';toast.classList.remove('hidden');setTimeout(()=>toast.classList.add('hidden'),1700);}catch(e){window.prompt('아래 번호를 길게 눌러 복사하세요',String(value));}}
+document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=()=>{const insurer=b.dataset.copy==='insurerPhone';copyDisplayedNumber(insurer?[curr.company,hotline].filter(Boolean).join('  '):r.phone,insurer?'보험사명과 연락처가 복사되었습니다':'고객 연락처가 복사되었습니다');});}
+async function copyDisplayedNumber(value,successMessage='연락처가 복사되었습니다'){if(!value)return;try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(String(value));}else{const el=document.createElement('textarea');el.value=String(value);el.style.cssText='position:fixed;left:-9999px;top:-9999px';document.body.appendChild(el);el.select();if(!document.execCommand('copy'))throw Error('복사 불가');el.remove();}const toast=$('#copyToast');toast.textContent=successMessage;toast.classList.remove('hidden');setTimeout(()=>toast.classList.add('hidden'),1700);}catch(e){window.prompt('아래 번호를 길게 눌러 복사하세요',String(value));}}
 
 async function logout(){const old=token;eraseSession();showLogin('로그아웃했습니다.');if(old)fetch(URL_BASE+'/auth/v1/logout',{method:'POST',headers:{apikey:PUBLIC_KEY,Authorization:'Bearer '+old}}).catch(()=>{});}
 function startPolling(){if(timer)clearInterval(timer);timer=setInterval(()=>{if(!document.hidden)load()},60000)}
@@ -45,8 +45,12 @@ window.addEventListener('popstate',()=>{
   if($('#app').classList.contains('hidden'))return;
   if(opened){returnToList();return;}
   if(window.confirm('평생 보험관리 앱을 종료하시겠습니까?')){
-    // Let system return to its previous history entry. Installed PWA hosts may vary in exit behavior.
-    history.back();
+    // A PWA cannot reliably force Android to terminate its task. Try to close
+    // immediately; if the host refuses, leave the application to a blank page
+    // so a second Back press is not needed and no customer data remains visible.
+    clearAuth();
+    window.close();
+    if(!window.closed)window.location.replace('about:blank');
   }else{
     history.pushState({psmobility:'list'},'',location.href);
   }
