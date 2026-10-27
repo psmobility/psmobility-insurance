@@ -45,12 +45,11 @@ window.addEventListener('popstate',()=>{
   if($('#app').classList.contains('hidden'))return;
   if(opened){returnToList();return;}
   if(window.confirm('평생 보험관리 앱을 종료하시겠습니까?')){
-    // A PWA cannot reliably force Android to terminate its task. Try to close
-    // immediately; if the host refuses, leave the application to a blank page
-    // so a second Back press is not needed and no customer data remains visible.
+    // Never redirect to about:blank: Android displays an empty browser tab.
+    // Return past our internal root history entry. The Android PWA host decides
+    // whether that closes the standalone activity; JS cannot force-quit it.
     clearAuth();
-    window.close();
-    if(!window.closed)window.location.replace('about:blank');
+    history.back();
   }else{
     history.pushState({psmobility:'list'},'',location.href);
   }
