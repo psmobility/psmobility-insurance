@@ -1,15 +1,13 @@
-PSMOBILITY 모바일 보험관리 PWA v2.2 — 설치 수정판
+PSMOBILITY 모바일 보험관리 PWA v2.6
 
-변경 사항: manifest-src CSP 허용, JSON manifest 적용, 서비스워커 캐시 버전 갱신.
+GitHub Pages 저장소 최상위에 index.html, sw.js, manifest.json 및 icons/ 폴더를 함께 업로드 후 Commit changes.
 
-GitHub 저장소 psmobility-insurance의 기존 index.html, sw.js를 이 버전으로 덮어쓰고 manifest.json을 추가하세요.
-icons 폴더는 기존 파일을 그대로 사용하면 됩니다.
-기존 manifest.webmanifest는 더 이상 쓰지 않으니 GitHub에서 삭제해도 됩니다.
+변경점:
+- 종료 확인 시 about:blank나 브라우저 바깥으로 절대 이동하지 않음. Android에서 창 닫기가 차단되면 홈 버튼으로 종료 안내 표시. 자바스크립트에서 안드로이드 PWA 강제 종료는 보장하지 않음.
+- index.html 캐시하지 않음. 온라인 실행/재실행 시 최신 HTML 수신. 이전 버전 서비스 워커 캐시 정리.
+- 활성화 시 새 릴리스 확인 후 업데이트 자동 새로고침. 상단에 v2.6 버전 표시.
+- 네트워크 미연결 시 고객데이터 오프라인 열람 불가 (의도한 개인정보 보호).
 
-GitHub Pages 환경에서는 _headers 파일이 응답 헤더 설정으로 동작하지 않습니다.
-이 패키지는 인증·RLS 정책에 대한 보안 감사를 대체하지 않습니다.
-모바일의 새로고침 후 Chrome에서 설치 메뉴를 재확인하세요.
+변경되지 않은 기능: 모바일 조회 전용, Supabase 로그인, 독립 계약 원장 조회, 연락처 복사.
 
-[v2.4] 보험사 전화번호 복사 시 보험사명과 전화번호 동시 복사. 목록 종료 확인 후 PWA 닫기 시도 및 종료 화면으로 이동(안드로이드 정책상 앱 프로세스 강제 종료는 불가).
-
-[v2.5] 앱 종료 확인 후 about:blank 이동 제거; 설치형 앱의 뒤로가기 기록으로 종료 시도. Android에 의해 실제 작업 종료 여부가 달라질 수 있습니다.
+중요: 서비스 워커 교체가 처음 적용되는 경우 기존 v2.5 캐시가 최초 한 번 남아 있을 수 있습니다. Chrome 사이트 데이터/앱 캐시 조치가 필요할 수 있습니다. 고객 데이터 보안은 Supabase RLS 정책에 의존합니다.
