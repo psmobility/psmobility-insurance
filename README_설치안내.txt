@@ -1,6 +1,6 @@
-PSMOBILITY 모바일 조회 전용 PWA v2.7
-
-변경: distinct hash history로 고객 상세→목록 뒤로가기 및 목록 종료 확인 안정화.
-Android PWA는 JavaScript로 완전한 앱 강제종료를 보장하지 않습니다. 창 닫기가 거부되면 고객 목록으로 복귀하고 홈 버튼 안내가 표시됩니다.
-GitHub 저장소 루트에 index.html, sw.js, manifest.json, icons/ 내용을 업로드합니다.
-고객정보는 서비스워커 캐시에 저장하지 않습니다.
+PSMOBILITY 모바일 보험관리 PWA v3.0 (PC v7.7 조회 호환 시험판)
+기존 GitHub Pages 저장소에 모든 파일 및 icons 폴더 업로드 후 Commit changes.
+설치 앱은 읽기 전용이며 서버의 고객 원본을 수정하지 않습니다.
+가입 진행(진), 차량번호/계약자, A계약 연결, 중도해지(해), 다음 갱신 대상, 보험사명+전화번호 복사를 확인하세요.
+PC v7.7의 일부 구형 대표 필드는 조회용 대체로만 사용합니다.
+운영 환경에서 Supabase RLS 및 로그인·보안 정책 검증 필요.
