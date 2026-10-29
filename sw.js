@@ -1,6 +1,6 @@
-// PSMOBILITY PWA v3.1: NEVER cache customer data or the application HTML.
+// PSMOBILITY PWA v3.3: NEVER cache customer data or the application HTML.
 // HTML navigation is always network-only. Only non-sensitive icons are cached.
-const CACHE='psmobility-icons-v3.1';
+const CACHE='psmobility-icons-v3.3';
 const ICONS=['./icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ICONS)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('psmobility-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
